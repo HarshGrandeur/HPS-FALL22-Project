@@ -42,10 +42,26 @@ var game = new Vue({
         first_player: -1,
         border_style: "border-width: 5px;border-color:#E4D00A;border-radius: 0;border-style: solid;",
         shake_: false,
-        r: 0,
-        c: 0,
-        r_: 0,
+
+        circle_r: 0,
+        circle_c: 0,
+        circle_r_: 0,
+
+        square_r: 0,
+        square_c: 0,
+        square_r_: 0,
+
+        triangle_r: 0,
+        triangle_c: 0,
+        triangle_r_: 0,
+
+        kite_r: 0,
+        kite_c: 0,
+        kite_r_: 0,
+
         item_sold: false,
+        order: [],
+        current_index: 0,
     },
 
     watch :{
@@ -65,8 +81,7 @@ var game = new Vue({
         //Game logic
         startGame: function () {
             this.resetGrid();
-
-            this.$refs.shapes_div.children[this.current_].children[0].children[0].style = this.border_style;
+            //this.$refs.shapes_div.children[this.current_].children[0].children[0].style = this.border_style;
             this.first_player = 0;
             this.current_player = this.first_player;
 
@@ -97,41 +112,59 @@ var game = new Vue({
             this.instr = !this.instr;
         },
 
+        get_current: function () {
+            return_me = this.order[this.current_index];
+            this.current_index++;
+            
+            return return_me;
+        },
+
         nextRound: function () {
             current = this.current_;
 
-            this.$refs.shapes_div.children[current].children[this.c].children[this.r].style = "";
-
-            if (this.item_sold) {
-                this.$refs.shapes_div.children[current].children[this.c].children[this.r].children[0].setAttribute('src', '');
-            }
-
+            this.$refs.order.children[this.round].children[0].style = this.border_style;
             this.round++;
             
-            if (this.s_len.length == 0){
-                this.s_len = [0, 1, 2, 3];
+            if(current == 0){
+                //this.$refs.shapes_div.children[current].children[this.circle_c].children[this.circle_r].style = "";
+                //this.$refs.shapes_div.children[current].children[this.circle_c].children[this.circle_r].children[0].setAttribute('src', '');
 
-                this.r_++;
-                this.r = Math.floor(this.r_ / this.size);
-                this.c = (this.c + 1) % this.size;
+                if(this.circle_c == 1) { this.circle_r++; this.circle_c = 0; }
+                else this.circle_c++;
             }
 
-            index = Math.floor(Math.random() * this.s_len.length)
-            next = this.s_len[index];
-            this.s_len[index] = this.s_len[this.s_len.length - 1];
-            this.s_len.pop();
+            if(current == 1){
+                //this.$refs.shapes_div.children[current].children[this.square_c].children[this.square_r].style = "";
+                //this.$refs.shapes_div.children[current].children[this.square_c].children[this.square_r].children[0].setAttribute('src', '');
 
-            this.current_ = next;
+                if(this.square_c == 1) { this.square_r++; this.square_c = 0; }
+                else this.square_c++;
+            }
 
-            console.info(this.s_len);
-            console.log(this.r + ", " + this.c + " and current: " + this.current_);
+            if(current == 2){
+                //this.$refs.shapes_div.children[current].children[this.triangle_c].children[this.triangle_r].style = "";
+                //this.$refs.shapes_div.children[current].children[this.triangle_c].children[this.triangle_r].children[0].setAttribute('src', '');
 
-            this.$refs.shapes_div.children[next].children[this.c].children[this.r].style = this.border_style;
+                if(this.triangle_c == 1) { this.triangle_r++; this.triangle_c = 0; }
+                else this.triangle_c++;
+            }
+
+            if(current == 3){
+                //this.$refs.shapes_div.children[current].children[this.kite_c].children[this.kite_r].style = "";
+                //this.$refs.shapes_div.children[current].children[this.kite_c].children[this.kite_r].children[0].setAttribute('src', '');
+
+                if(this.kite_c == 1) { this.kite_r++; this.kite_c = 0; }
+                else this.kite_c++;
+            }
+            
+            this.current_ = this.get_current();
+
+            //this.$refs.shapes_div.children[this.current_].children[this.c].children[this.r].style = this.border_style;
 
             this.first_player = this.round % this.size;
             this.current_player = this.first_player;
 
-            this.$refs.players_div.children[this.first_player].style = "display: table-cell;" + this.border_style;
+            this.$refs.players_div.children[this.first_player].style = this.border_style;
         },
 
         calculateWinner: function() {
@@ -155,11 +188,31 @@ var game = new Vue({
             return winner;
         },
 
+        shuffleArray: function(array) {
+            for (var i = array.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var temp = array[i];
+                array[i] = array[j];
+                array[j] = temp;
+            }
+        },
+
         resetGrid: function() {
+            for(i = 0; i < 4; i++)
+                for(j = 0; j < this.size; j++)
+                    for(k = 0; k < 3; k++)
+                        this.order.push(i);
+
+            this.shuffleArray(this.order);
+
+            this.r = 0;//this.order[0];
+            this.c = 0;
+
             for(i = 0; i < this.size; i++){
                 this.$refs.players_div.children[i].style = "display: table-cell;";
                 this.$refs.players_div.children[i].children[0].children[0].setAttribute('disabled', '');
                 this.$refs.players_div.children[i].children[0].children[0].blur();
+                
                 for(j = 0; j < 8; j++){
                     this.$refs.players_div.children[i].children[0].children[6].children[j].setAttribute('hidden', '');
                 }
@@ -173,23 +226,15 @@ var game = new Vue({
             for(i = 0; i < 4; i++){
                 for(j=0; j < this.size; j++){
                     for(k = 0; k < 3; k++){
-                        this.$refs.shapes_div.children[i].children[this.c].children[this.r].style = "";
-                        this.$refs.shapes_div.children[i].children[this.c].children[this.r].children[0].setAttribute('src', this.shapes[i].img);
+                        //this.$refs.shapes_div.children[i].children[j].children[k].style = "";
+                        //this.$refs.shapes_div.children[i].children[j].children[k].children[0].setAttribute('src', this.shapes[i].img);
                     }
                 }
             }
-
-            this.s_len = [0, 1, 2, 3];
             
-            index = Math.floor(Math.random() * this.s_len.length)
-            this.current_ = this.s_len[index];
-            this.s_len[index] = this.s_len[this.s_len.length - 1];
-            this.s_len.pop();
+            this.current_ = this.get_current();
 
-            this.first_player = 0;
-
-            console.info(this.s_len);
-            console.log(this.r + ", " + this.c + " and current: " + this.current_);
+            this.first_player = this.current_;
         },
 
         nextPlayer: function () {
@@ -237,6 +282,11 @@ var game = new Vue({
         },
 
         makeBid: function (event) {
+            if(this.player_info.player_bids[this.current_player + 1] > this.player_info.player_money[this.current_player + 1]) { 
+                window.alert("Please enter a valid bid amount");
+                return;
+            }
+
             this.nextPlayer();
             event.target.blur();
             event.target.setAttribute('disabled', '');

@@ -105,16 +105,21 @@
         <br>
     </div>
 
+    <h3>Order of the items for auction is:</h3><br>
+    <div ref="order">
+        <div v-for="o in order" style="display: table-cell; padding: 15px;"><img :src="shapes[o].img" style="border: 4px solid #525;" height="60" width="60"></div>
+    </div>
+
     <br>
     <br>
     <br>
 
     <div style="width: 60%; display: table; margin:0 auto;">
-        <div ref="shapes_div" style="display: table-row; height: 230px;">
-            <div v-for="(shape, i) in shapes" :key="i" style="display: table-cell;">
-                <div v-for="j in size" style="display: table-cell;">
-                    <div v-for="k in 3">
-                        <img :src="shape.img" style="display: table-cell; border: 5px solid #555;" height="120" width="120">
+        <div ref="shapes_div" style="display:none table-row;">
+            <div v-for="(shape, i) in shapes" :key="i" style="display:none table-cell;">
+                <div v-for="j in size" style="display:none table-cell;">
+                    <div v-for="k in 3" style="display: none">
+                        <img hidden src="" style="display:none table-cell;">
                     </div>
                 </div>
             </div>
@@ -127,7 +132,7 @@
     <div ref="players_div" style="height: 72%; width: 72%; display: table; margin:0 auto;">
         <div v-for="m in size" style="display: table-cell;" :id="'div' + m">
             <h3 :id="'h' + m">
-                Player {{m}}: <input type="password" disabled :id="'input' + m" @keyup.enter="makeBid($event)" v-model.number="player_info.player_bids[m]" :placeholder="'enter bid amount'"/>
+                Player {{m}}: <input style="color: white;" type="password" disabled :id="'input' + m" @keyup.enter="makeBid($event)" v-model.number="player_info.player_bids[m]" :placeholder="'enter bid amount'"/>
                 <br><br>
                 Amount remaining:
                 <input style="border: none; text-align: center;" disabled v-model="player_info.player_money[m]"> </input>
