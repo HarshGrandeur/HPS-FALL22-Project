@@ -73,16 +73,23 @@
     <div>
         <div class="instr"v-if="showInstr()">
             <strong>Overview:</strong> <br/>
-            <p> Auction Triplets is a multi-player auction game. There can be 2-8 players that can play the game. Each player satrts with a fixed initial amount of money (100). There are 4 total object types for the auction. The objective of the game is to collect 3 objects of the same type. The first player to do so wins the game.</p>
-            To play the game:<br>
-                <ul>
-                    <li>Choose the number of players from the dropdown and click start.</li>
-                    <li>The object up for auction gets highlighted and so does the player whose turn it is (the player who goes first is determined randomly).</li>
-                    <li>The player would place their bid and press `Enter`</li>
-                    <li>Then the next player bids, and the next and so on. Once all players have made their bids, the player with the highest (valid) bid wins</li>
-                    <li>The game ends when a player wins (obtains 3 objects of the same type) </li>
-                    <li>`Reset Game` can be used to reset the game</li>
-                </ul> 
+            <p> Auction Triplets is a multi-player auction game. There can be 2-8 players that can play the game. <br><br>
+                <strong>How the game starts:</strong><br>
+                The game starts as follows: Each player starts with a fixed initial amount of money (100).<br><br>
+                <strong>Objects:</strong><br>
+                There are <strong>4 total object types</strong> for the auction.<br><br> 
+                <strong>Objective:</strong><br>The objective of the game is to collect <strong>3 objects of the same type</strong>. The first player to do so wins the game.</p><br>
+                            <strong>To play the game:</strong><br>
+                                <ul>
+                                    <li>Choose the number of players from the dropdown and click start.</li>
+                                    <li>The object up for auction gets highlighted and so does the player whose turn it is (the player who goes first is determined randomly).</li>
+                                    <li>The player <strong>places their bid</strong> and presses `Enter`</li>
+                                    <li>If the bid is invalid, then the game would throw an error and ask the player to enter a valid bid amount</li>
+                                    <li>Then the next player bids, and the next and so on. Once all players have made their bids, the player with the highest (valid) bid wins</li>
+                                    <li>The game ends when a player wins (obtains 3 objects of the same type) </li>
+                                    <li>`Reset Game` can be used to reset the game</li>
+                                    <li>In case of a tie, the first player that made the winning bid wins. Since each player gets to go first, this method to resolve ties is simple and fair</li>
+                                </ul> 
         </div>
     </div>
 
@@ -132,7 +139,7 @@
     <div ref="players_div" style="height: 72%; width: 72%; display: table; margin:0 auto;">
         <div v-for="m in size" style="display: table-cell;" :id="'div' + m">
             <h3 :id="'h' + m">
-                Player {{m}}: <input style="color: white;" type="password" disabled :id="'input' + m" @keyup.enter="makeBid($event)" v-model.number="player_info.player_bids[m]" :placeholder="'enter bid amount'"/>
+                Player {{m}}: <input type="password" disabled :id="'input' + m" @keyup.enter="makeBid($event)" v-model.number="player_info.player_bids[m]" :placeholder="[[text]]"/>
                 <br><br>
                 Amount remaining:
                 <input style="border: none; text-align: center;" disabled v-model="player_info.player_money[m]"> </input>

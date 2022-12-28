@@ -1,3 +1,4 @@
+const vue = require('./lib/vue.js');
 var Vue = require('./lib/vue.js');
 var SaverFile = require('./saver');
 var Saver = SaverFile();
@@ -33,7 +34,8 @@ var game = new Vue({
         current_: 0,
         some_counter: 0,
         player_info: {
-            player_bids: [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            player_bids: new Array(10),
+            player_bids_input: new Array(10),
             player_money: [-1, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
             items_collected: [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]],
         },
@@ -42,6 +44,7 @@ var game = new Vue({
         first_player: -1,
         border_style: "border-width: 5px;border-color:#E4D00A;border-radius: 0;border-style: solid;",
         shake_: false,
+        text: "Enter bid amount",
 
         circle_r: 0,
         circle_c: 0,
@@ -165,6 +168,7 @@ var game = new Vue({
             this.current_player = this.first_player;
 
             this.$refs.players_div.children[this.first_player].style = this.border_style;
+            this.player_info.player_bids = new Array(10);
         },
 
         calculateWinner: function() {
@@ -172,19 +176,21 @@ var game = new Vue({
             max_bid = -1;
 
             for(i = this.first_player; i <= this.size; i++){
-                if (this.player_info.player_bids[i] > max_bid && this.player_info.player_money[i] >= this.player_info.player_bids[i]){
-                    max_bid = this.player_info.player_bids[i];
+                if (this.player_info.player_bids_input[i] > max_bid && this.player_info.player_money[i] >= this.player_info.player_bids_input[i]){
+                    max_bid = this.player_info.player_bids_input[i];
                     winner = i;
                 }
             }
 
             for (i = 1; i < this.first_player; i++){
-                if (this.player_info.player_bids[i] > max_bid && this.player_info.player_money[i] >= this.player_info.player_bids[i]) {
-                    max_bid = this.player_info.player_bids[i];
+                if (this.player_info.player_bids_input[i] > max_bid && this.player_info.player_money[i] >= this.player_info.player_bids_input[i]) {
+                    max_bid = this.player_info.player_bids_input[i];
                     winner = i;
                 }
             }
-
+            for(i = 1; i <= this.size; i++) {
+                this.player_info.player_bids[i] = this.player_info.player_bids_input[i];
+            }
             return winner;
         },
 
@@ -207,7 +213,7 @@ var game = new Vue({
 
             this.r = 0;//this.order[0];
             this.c = 0;
-
+            this.player_info.player_bids = new Array(10);
             for(i = 0; i < this.size; i++){
                 this.$refs.players_div.children[i].style = "display: table-cell;";
                 this.$refs.players_div.children[i].children[0].children[0].setAttribute('disabled', '');
@@ -218,7 +224,7 @@ var game = new Vue({
                 }
 
                 Vue.set(this.player_info.player_money, i + 1, 100);
-                Vue.set(this.player_info.player_bids, i + 1, 0);
+                // Vue.set(this.player_info.player_bids, i + 1, 0);
                 this.player_info.items_collected[i] = [0, 0, 0, 0];
 
             }
@@ -235,6 +241,7 @@ var game = new Vue({
             this.current_ = this.get_current();
 
             this.first_player = this.current_;
+
         },
 
         nextPlayer: function () {
@@ -282,17 +289,20 @@ var game = new Vue({
         },
 
         makeBid: function (event) {
+            console.log("player bid is set to " + this.player_bids)
             if(this.player_info.player_bids[this.current_player + 1] > this.player_info.player_money[this.current_player + 1]) { 
                 window.alert("Please enter a valid bid amount");
                 return;
             }
-
+            this.player_info.player_bids_input[this.current_player + 1] = this.player_info.player_bids[this.current_player + 1];
+            Vue.set(this.player_info.player_bids, this.current_player + 1, 100000000000000);
             this.nextPlayer();
             event.target.blur();
             event.target.setAttribute('disabled', '');
 
             this.$refs.players_div.children[this.current_player].children[0].children[0].removeAttribute('disabled');
             this.$refs.players_div.children[this.current_player].children[0].children[0].focus();
+
         },
 
         edgeClick: function (edge) {

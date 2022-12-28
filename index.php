@@ -7,7 +7,7 @@ $instruction = <<<EOD
 <h1><strong>Auction Triplets</strong></h1>
 <p> Auction Triplets is a multi-player auction game. There can be 2-8 players that can play the game. <br><br>
 <strong>How the game starts:</strong><br>
-The game starts as follows: Each player satrts with a fixed initial amount of money (100). Players make bets on certain items.<br><br>
+The game starts as follows: Each player starts with a fixed initial amount of money (100).<br><br>
 <strong>Objects:</strong><br>
 There are <strong>4 total object types</strong> for the auction.<br><br> 
 <strong>Objective:</strong><br>The objective of the game is to collect <strong>3 objects of the same type</strong>. The first player to do so wins the game.</p><br>
