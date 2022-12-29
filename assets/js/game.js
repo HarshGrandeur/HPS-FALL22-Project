@@ -32,7 +32,6 @@ var game = new Vue({
         ],
         white_image: "./assets/white.png",
         s_len: [0, 1, 2, 3],
-        current_: 0,
         some_counter: 0,
         player_info: {
             player_bids: new Array(10),
@@ -40,6 +39,7 @@ var game = new Vue({
             player_money: [-1, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],
             items_collected: [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]],
         },
+        player_names: ['','','','','','','',''],
         round: 0,
         current_player: 0,
         first_player: -1,
@@ -64,7 +64,7 @@ var game = new Vue({
         kite_r_: 0,
 
         item_sold: false,
-        order: [],
+        order: [0,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3,0,1,2,3],
         current_index: 0,
     },
 
@@ -85,7 +85,6 @@ var game = new Vue({
         //Game logic
         startGame: function () {
             this.resetGrid();
-            //this.$refs.shapes_div.children[this.current_].children[0].children[0].style = this.border_style;
             this.first_player = 0;
             this.current_player = this.first_player;
 
@@ -124,7 +123,7 @@ var game = new Vue({
         },
 
         nextRound: function () {
-            current = this.current_;
+            current = this.order[this.round];
 
             this.$refs.order.children[this.round].children[0].style = this.border_style;
             this.round++;
@@ -160,10 +159,6 @@ var game = new Vue({
                 if(this.kite_c == 1) { this.kite_r++; this.kite_c = 0; }
                 else this.kite_c++;
             }
-            
-            this.current_ = this.get_current();
-
-            //this.$refs.shapes_div.children[this.current_].children[this.c].children[this.r].style = this.border_style;
 
             this.first_player = this.round % this.size;
             this.current_player = this.first_player;
@@ -181,7 +176,7 @@ var game = new Vue({
                     winner = i;
                 }
             }
-            for (i = 1; i < this.first_player; i++){
+            for (i = 1; i <= this.first_player; i++){
                 if (this.player_info.player_bids_input[i] > max_bid && this.player_info.player_money[i] >= this.player_info.player_bids_input[i]) {
                     max_bid = this.player_info.player_bids_input[i];
                     winner = i;
@@ -204,13 +199,19 @@ var game = new Vue({
         },
 
         resetGrid: function() {
+            this.round = 0;
+            this.order = [];
+            arr = [];
             for(i = 0; i < 4; i++)
                 for(j = 0; j < this.size; j++)
                     for(k = 0; k < 3; k++)
-                        this.order.push(i);
-
-            this.shuffleArray(this.order);
-
+                        arr.push(i);
+            
+            this.shuffleArray(arr);
+            for(i = 0; i < arr.length; i++) {
+                Vue.set(this.order, i, arr[i]);
+            }
+            console.log("Order is " + this.order);
             this.r = 0;//this.order[0];
             this.c = 0;
             this.player_info.player_bids = new Array(10);
@@ -220,27 +221,20 @@ var game = new Vue({
                 this.$refs.players_div.children[i].children[0].children[1].blur();
                 
                 for(j = 0; j < 8; j++){
-                    // this.$refs.players_div.children[i].children[0].children[6].children[j].setAttribute('hidden', '');
+                    this.$refs.players_div.children[i].children[0].children[7].children[j + 4].setAttribute('src', './assets/white.png');
                 }
 
                 Vue.set(this.player_info.player_money, i + 1, 100);
-                // Vue.set(this.player_info.player_bids, i + 1, 0);
-                this.player_info.items_collected[i] = [0, 0, 0, 0];
+                this.player_info.items_collected[i+1] = [0, 0, 0, 0];
 
             }
 
-            for(i = 0; i < 4; i++){
-                for(j=0; j < this.size; j++){
-                    for(k = 0; k < 3; k++){
-                        //this.$refs.shapes_div.children[i].children[j].children[k].style = "";
-                        //this.$refs.shapes_div.children[i].children[j].children[k].children[0].setAttribute('src', this.shapes[i].img);
-                    }
-                }
+            for(i = 0; i < this.order.length; i++) {
+                this.$refs.order.children[i].children[0].setAttribute('src', this.shapes[this.order[i]].img);
+                this.$refs.order.children[i].children[0].style = "border: 4px solid #525;";
             }
-            
-            this.current_ = this.get_current();
 
-            this.first_player = this.current_;
+            this.first_player = this.round % this.size;
 
         },
 
@@ -250,7 +244,7 @@ var game = new Vue({
 
             if(this.current_player == this.first_player){
                 this.current_player = this.first_player;
-                current_item = this.current_;
+                current_item = this.order[this.round];
                 console.log("Before calculate winner first player " + this.first_player);
                 winner = this.calculateWinner();
 
@@ -262,9 +256,11 @@ var game = new Vue({
                     this.player_info.items_collected[winner][current_item]++;
 
                     if (this.player_info.items_collected[winner][current_item] == 3) {
-                        alert("Game over! The winner is player " + winner);
+                        winner_name = this.$refs.players_div.children[winner - 1].children[0].children[0].children[0].innerHTML;
+                        alert("Game over! The winner is player " + winner_name);
                         Saver.saveScore("player" + winner, 'WIN');
-                        this.resetGrid();
+                        this.startGame();
+                        return;
                     }
                     else {
                         img_to_show = (this.player_info.items_collected[winner][current_item] - 1) * 4 + current_item;

@@ -136,7 +136,7 @@
     </div>
 
     <h3>Order of the items for auction is:</h3><br>
-    <div class="scrollmenu" ref="order">
+    <div class="scrollmenu" ref="order" v-model="order">
         <div v-for="o in order" style="display: table-cell; padding: 15px;"><img :src="shapes[o].img" style="border: 4px solid #525;" height="60" width="60"></div>
     </div>
 
@@ -163,9 +163,7 @@
         <div v-for="m in size" style="display: table-cell;" :id="'div' + m">
             <h3 :id="'h' + m">
                 <div class="control-group">
-                    <label for="name" class="control-label" placeholder="Enter your name">
-                        Player {{m}}
-                    </label>
+                    <label for="name" class="control-label" placeholder="Enter your name">Player {{m}}</label>
                     <input type="text" class="edit-input" />
                     <div class="controls">
                         <a class="edit" href="#">Change Name</a>
