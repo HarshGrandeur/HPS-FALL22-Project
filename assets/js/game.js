@@ -30,6 +30,7 @@ var game = new Vue({
             { name: "triangle", img: "./assets/triangle.png" },
             { name: "kite", img: "./assets/kite.png" },
         ],
+        white_image: "./assets/white.png",
         s_len: [0, 1, 2, 3],
         current_: 0,
         some_counter: 0,
@@ -89,8 +90,8 @@ var game = new Vue({
             this.current_player = this.first_player;
 
             this.$refs.players_div.children[this.first_player].style = "display: table-cell;" + this.border_style;
-            this.$refs.players_div.children[this.first_player].children[0].children[0].removeAttribute('disabled');
-            this.$refs.players_div.children[this.first_player].children[0].children[0].focus();
+            this.$refs.players_div.children[this.first_player].children[0].children[1].removeAttribute('disabled');
+            this.$refs.players_div.children[this.first_player].children[0].children[1].focus();
         },
 
         getWinner: function () {
@@ -174,14 +175,12 @@ var game = new Vue({
         calculateWinner: function() {
             winner = -1;
             max_bid = -1;
-
-            for(i = this.first_player; i <= this.size; i++){
+            for(i = this.first_player + 1; i <= this.size; i++){
                 if (this.player_info.player_bids_input[i] > max_bid && this.player_info.player_money[i] >= this.player_info.player_bids_input[i]){
                     max_bid = this.player_info.player_bids_input[i];
                     winner = i;
                 }
             }
-
             for (i = 1; i < this.first_player; i++){
                 if (this.player_info.player_bids_input[i] > max_bid && this.player_info.player_money[i] >= this.player_info.player_bids_input[i]) {
                     max_bid = this.player_info.player_bids_input[i];
@@ -191,6 +190,7 @@ var game = new Vue({
             for(i = 1; i <= this.size; i++) {
                 this.player_info.player_bids[i] = this.player_info.player_bids_input[i];
             }
+    
             return winner;
         },
 
@@ -216,11 +216,11 @@ var game = new Vue({
             this.player_info.player_bids = new Array(10);
             for(i = 0; i < this.size; i++){
                 this.$refs.players_div.children[i].style = "display: table-cell;";
-                this.$refs.players_div.children[i].children[0].children[0].setAttribute('disabled', '');
-                this.$refs.players_div.children[i].children[0].children[0].blur();
+                this.$refs.players_div.children[i].children[0].children[1].setAttribute('disabled', '');
+                this.$refs.players_div.children[i].children[0].children[1].blur();
                 
                 for(j = 0; j < 8; j++){
-                    this.$refs.players_div.children[i].children[0].children[6].children[j].setAttribute('hidden', '');
+                    // this.$refs.players_div.children[i].children[0].children[6].children[j].setAttribute('hidden', '');
                 }
 
                 Vue.set(this.player_info.player_money, i + 1, 100);
@@ -251,6 +251,7 @@ var game = new Vue({
             if(this.current_player == this.first_player){
                 this.current_player = this.first_player;
                 current_item = this.current_;
+                console.log("Before calculate winner first player " + this.first_player);
                 winner = this.calculateWinner();
 
                 if(winner != -1){
@@ -267,8 +268,10 @@ var game = new Vue({
                     }
                     else {
                         img_to_show = (this.player_info.items_collected[winner][current_item] - 1) * 4 + current_item;
-
-                        this.$refs.players_div.children[winner - 1].children[0].children[6].children[img_to_show].removeAttribute('hidden');
+                        image_src = this.shapes[current_item].img;
+                        console.log(image_src)
+                        this.$refs.players_div.children[winner - 1].children[0].children[7].children[img_to_show+4].setAttribute('src',image_src);
+                        this.$refs.players_div.children[winner - 1].children[0].children[7].children[img_to_show+4].removeAttribute('hidden');
 
                         this.shake_ = true;
                         setTimeout(() => {
@@ -295,13 +298,13 @@ var game = new Vue({
                 return;
             }
             this.player_info.player_bids_input[this.current_player + 1] = this.player_info.player_bids[this.current_player + 1];
-            Vue.set(this.player_info.player_bids, this.current_player + 1, 100000000000000);
+            Vue.set(this.player_info.player_bids, this.current_player + 1, 100);
             this.nextPlayer();
             event.target.blur();
             event.target.setAttribute('disabled', '');
 
-            this.$refs.players_div.children[this.current_player].children[0].children[0].removeAttribute('disabled');
-            this.$refs.players_div.children[this.current_player].children[0].children[0].focus();
+            this.$refs.players_div.children[this.current_player].children[0].children[1].removeAttribute('disabled');
+            this.$refs.players_div.children[this.current_player].children[0].children[1].focus();
 
         },
 

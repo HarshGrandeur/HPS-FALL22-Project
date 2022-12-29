@@ -12,6 +12,9 @@
     <link rel="stylesheet" type="text/css" href="assets/css/animate.css">
 
     <style>
+        .edit-input {
+            display:none;
+        }
         .grid-container {
             display: grid;
             grid-template-columns: auto auto auto auto;
@@ -29,7 +32,8 @@
             padding: 1px;
             font-size: 20px;
             text-align: center;
-            height: 85px;
+            height: 85%;
+            width: 85%;
         }
 
         .shake {
@@ -59,6 +63,25 @@
                 transform: translate3d(8px, 0, 0);
             }
         }
+        div.scrollmenu {
+            background-color: white;
+            overflow: auto;
+            white-space: nowrap;
+        }
+
+        div.scrollmenu a {
+            display: inline-block;
+            color: white;
+            text-align: center;
+            padding: 14px;
+            text-decoration: none;
+        }
+
+        div.scrollmenu a:hover {
+            background-color: #777;
+        }
+
+        .control-label .text-info { display:inline-block; }
     </style>
 </head>
 
@@ -75,7 +98,7 @@
             <strong>Overview:</strong> <br/>
             <p> Auction Triplets is a multi-player auction game. There can be 2-8 players that can play the game. <br><br>
                 <strong>How the game starts:</strong><br>
-                The game starts as follows: Each player starts with a fixed initial amount of money (100).<br><br>
+                Each player starts with a fixed initial amount of money (100).<br><br>
                 <strong>Objects:</strong><br>
                 There are <strong>4 total object types</strong> for the auction.<br><br> 
                 <strong>Objective:</strong><br>The objective of the game is to collect <strong>3 objects of the same type</strong>. The first player to do so wins the game.</p><br>
@@ -113,7 +136,7 @@
     </div>
 
     <h3>Order of the items for auction is:</h3><br>
-    <div ref="order">
+    <div class="scrollmenu" ref="order">
         <div v-for="o in order" style="display: table-cell; padding: 15px;"><img :src="shapes[o].img" style="border: 4px solid #525;" height="60" width="60"></div>
     </div>
 
@@ -139,21 +162,35 @@
     <div ref="players_div" style="height: 72%; width: 72%; display: table; margin:0 auto;">
         <div v-for="m in size" style="display: table-cell;" :id="'div' + m">
             <h3 :id="'h' + m">
-                Player {{m}}: <input type="password" disabled :id="'input' + m" @keyup.enter="makeBid($event)" v-model.number="player_info.player_bids[m]" :placeholder="[[text]]"/>
+                <div class="control-group">
+                    <label for="name" class="control-label" placeholder="Enter your name">
+                        Player {{m}}
+                    </label>
+                    <input type="text" class="edit-input" />
+                    <div class="controls">
+                        <a class="edit" href="#">Change Name</a>
+                    </div>
+                </div>
+                <!-- Player {{m}}:  -->
+                <input type="password" disabled :id="'input' + m" @keyup.enter="makeBid($event)" v-model.number="player_info.player_bids[m]" :placeholder="[[text]]"/>
                 <br><br>
                 Amount remaining:
                 <input style="border: none; text-align: center;" disabled v-model="player_info.player_money[m]"> </input>
                 <br><br>
-                <div :id="'div_' + m" class="grid-container">
-                    <img hidden class="grid-item" :class="{ shake: shake_ }" :src="shapes[0].img" object-fit: contain>
-                    <img hidden class="grid-item" :class="{ shake: shake_ }" :src="shapes[1].img" object-fit: contain>
-                    <img hidden class="grid-item" :class="{ shake: shake_ }" :src="shapes[2].img" object-fit: contain>
-                    <img hidden class="grid-item" :class="{ shake: shake_ }" :src="shapes[3].img" object-fit: contain>
+                <div :id="'div_' + m" style="height: 120%;" class="grid-container">
+                    <label for="html">Circle</label>
+                    <label for="html">Square</label>
+                    <label for="html">Triangle</label>
+                    <label for="html">Diamond</label>
+                    <img  class="grid-item" :class="{ shake: shake_ }" src="./assets/white.png" object-fit: contain>
+                    <img  class="grid-item" :class="{ shake: shake_ }" src="./assets/white.png" object-fit: contain>
+                    <img  class="grid-item" :class="{ shake: shake_ }" src="./assets/white.png" object-fit: contain>
+                    <img  class="grid-item" :class="{ shake: shake_ }" src="./assets/white.png" object-fit: contain>
                     
-                    <img hidden class="grid-item" :class="{ shake: shake_ }" :src="shapes[0].img" object-fit: contain>
-                    <img hidden class="grid-item" :class="{ shake: shake_ }" :src="shapes[1].img" object-fit: contain>
-                    <img hidden class="grid-item" :class="{ shake: shake_ }" :src="shapes[2].img" object-fit: contain>
-                    <img hidden class="grid-item" :class="{ shake: shake_ }" :src="shapes[3].img" object-fit: contain>
+                    <img  class="grid-item" :class="{ shake: shake_ }" src="./assets/white.png" object-fit: contain>
+                    <img  class="grid-item" :class="{ shake: shake_ }" src="./assets/white.png" object-fit: contain>
+                    <img  class="grid-item" :class="{ shake: shake_ }" src="./assets/white.png" object-fit: contain>
+                    <img  class="grid-item" :class="{ shake: shake_ }" src="./assets/white.png" object-fit: contain>
                 </div>
             </h3>  
         </div>
@@ -162,4 +199,21 @@
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
 <script type="text/javascript" src="assets/js/bundle.js" charset="utf-8"></script>
+<script>
+    $(document).ready(function() {
+        $('a.edit').click(function () {
+            var dad = $(this).parent().parent();
+            dad.find('label').hide();
+            dad.find('input[type="text"]').show().focus();
+        });
+        
+        $('input[type=text]').focusout(function() {
+            var dad = $(this).parent();
+            $(this).hide();
+            dad.find('label').get(0).innerHTML = $(this).get(0).value;
+            console.log(dad.find('label'));
+            dad.find('label').show();
+        });
+    });
+</script>
 </body>
